@@ -79,4 +79,9 @@ void InitHLELibs(Core::Loader::SymbolsResolver* sym) {
     Libraries::Audio3d::RegisterlibSceAudio3d(sym);
 }
 
+void ShutdownHLELibs(Core::Loader::SymbolsResolver* sym) {
+    LOG_INFO(Lib_Kernel, "Shutting down HLE libraries");
+    sym->Clear();
+}
+
 } // namespace Libraries

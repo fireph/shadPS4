@@ -107,16 +107,34 @@ void Linker::Execute() {
 
     for (auto& m : m_modules) {
         if (!m->IsSharedLib()) {
+            if (!should_stop) {
 #ifdef ARCH_X86_64
-            ExecuteGuest(RunMainEntry, m->GetEntryAddress(), &p, ProgramExitFunc);
+                ExecuteGuest(RunMainEntry, m->GetEntryAddress(), &p, ProgramExitFunc);
 #else
-            UNIMPLEMENTED_MSG(
-                "Missing guest entrypoint implementation for target CPU architecture.");
+                UNIMPLEMENTED_MSG(
+                    "Missing guest entrypoint implementation for target CPU architecture.");
 #endif
+            } else {
+                LOG_INFO(Core_Linker, "Stopping execution before main module start");
+                break;
+            }
         }
     }
 
     SetTcbBase(nullptr);
+
+    if (should_stop) {
+        LOG_INFO(Core_Linker, "Linker execution stopped");
+    }
+}
+
+void Linker::Stop() {
+    LOG_INFO(Core_Linker, "Stopping linker execution");
+
+    // Signal the main execution loop to stop
+    should_stop = true;
+
+    LOG_INFO(Core_Linker, "Linker stopped");
 }
 
 s32 Linker::LoadModule(const std::filesystem::path& elf_name, bool is_dynamic) {

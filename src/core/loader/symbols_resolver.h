@@ -43,6 +43,7 @@ public:
 
     void AddSymbol(const SymbolResolver& s, u64 virtual_addr);
     const SymbolRecord* FindSymbol(const SymbolResolver& s) const;
+    void Clear();
 
     void DebugDump(const std::filesystem::path& file_name);
 

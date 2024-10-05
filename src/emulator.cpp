@@ -217,7 +217,39 @@ void Emulator::Run(const std::filesystem::path& file) {
         window->waitEvent();
     }
 
-    std::exit(0);
+    LOG_INFO(Loader, "Window has closed in Run function, exiting...");
+
+    Shutdown();
+}
+
+void Emulator::Shutdown() {
+    LOG_INFO(Loader, "Shutting down shadPS4 emulator");
+
+    // Cleanup libraries
+    Libraries::ShutdownHLELibs(&linker->GetHLESymbols());
+
+    // Stop the linker execution if it's still running
+    linker->Stop();
+
+    // Cleanup kernel facilities
+    Libraries::Kernel::shutdown_pthreads();
+
+    // Destroy the window
+    window.reset();
+    g_window = nullptr;
+
+    // Unmount all mounted points
+    auto* mnt = Common::Singleton<Core::FileSys::MntPoints>::Instance();
+    mnt->UnmountAll();
+
+    // Save configuration
+    const auto config_dir = Common::FS::GetUserPath(Common::FS::PathType::UserDir);
+    Config::save(config_dir / "config.toml");
+
+    // Stop the logger
+    Common::Log::Stop();
+
+    LOG_INFO(Loader, "Emulator shutdown complete");
 }
 
 void Emulator::LoadSystemModules(const std::filesystem::path& file) {

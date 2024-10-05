@@ -12,6 +12,7 @@ class SymbolsResolver;
 namespace Libraries::Kernel {
 
 int PS4_SYSV_ABI scePthreadRwlockattrInit(OrbisPthreadRwlockattr* attr);
+int PS4_SYSV_ABI scePthreadRwlockattrDestroy(OrbisPthreadRwlockattr* attr);
 
 void SemaphoreSymbolsRegister(Core::Loader::SymbolsResolver* sym);
 void RwlockSymbolsRegister(Core::Loader::SymbolsResolver* sym);

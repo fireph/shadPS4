@@ -77,5 +77,6 @@ constexpr auto wrapper = wrapper_impl<name, F, f>::wrap;
 namespace Libraries {
 
 void InitHLELibs(Core::Loader::SymbolsResolver* sym);
+void ShutdownHLELibs(Core::Loader::SymbolsResolver* sym);
 
 } // namespace Libraries

@@ -106,6 +106,7 @@ public:
     bool Resolve(const std::string& name, Loader::SymbolType type, Module* module,
                  Loader::SymbolRecord* return_info);
     void Execute();
+    void Stop();
     void DebugDump();
 
     template <class ReturnType, class... FuncArgs, class... CallArgs>
@@ -136,6 +137,7 @@ private:
     AppHeapAPI heap_api{};
     std::vector<std::unique_ptr<Module>> m_modules;
     Loader::SymbolsResolver m_hle_symbols{};
+    std::atomic<bool> should_stop = false;
 };
 
 } // namespace Core

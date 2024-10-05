@@ -52,6 +52,54 @@ void init_pthreads() {
     g_pthread_cxt->SetPthreadPool(new PThreadPool);
 }
 
+void shutdown_pthreads() {
+    if (g_pthread_cxt == nullptr) {
+        LOG_WARNING(Kernel_Pthread, "Attempting to shutdown pthreads, but g_pthread_cxt is null");
+        return;
+    }
+
+    // Clean up default mutex attribute
+    ScePthreadMutexattr* default_mutexattr = g_pthread_cxt->getDefaultMutexattr();
+    if (default_mutexattr != nullptr) {
+        scePthreadMutexattrDestroy(default_mutexattr);
+        g_pthread_cxt->setDefaultMutexattr(nullptr);
+    }
+
+    // Clean up default condition attribute
+    ScePthreadCondattr* default_condattr = g_pthread_cxt->getDefaultCondattr();
+    if (default_condattr != nullptr) {
+        scePthreadCondattrDestroy(default_condattr);
+        g_pthread_cxt->setDefaultCondattr(nullptr);
+    }
+
+    // Clean up default thread attribute
+    ScePthreadAttr* default_attr = g_pthread_cxt->GetDefaultAttr();
+    if (default_attr != nullptr) {
+        scePthreadAttrDestroy(default_attr);
+        g_pthread_cxt->SetDefaultAttr(nullptr);
+    }
+
+    // Clean up default read-write lock attribute
+    OrbisPthreadRwlockattr* default_rwattr = g_pthread_cxt->getDefaultRwattr();
+    if (default_rwattr != nullptr) {
+        scePthreadRwlockattrDestroy(default_rwattr);
+        g_pthread_cxt->setDefaultRwattr(nullptr);
+    }
+
+    // Clean up thread pool
+    PThreadPool* thread_pool = g_pthread_cxt->GetPthreadPool();
+    if (thread_pool != nullptr) {
+        delete thread_pool;
+        g_pthread_cxt->SetPthreadPool(nullptr);
+    }
+
+    // Finally, delete the pthread context
+    delete g_pthread_cxt;
+    g_pthread_cxt = nullptr;
+
+    LOG_INFO(Kernel_Pthread, "Pthread shutdown complete");
+}
+
 void pthreadInitSelfMainThread() {
     const char* name = "Main_Thread";
     auto* pthread_pool = g_pthread_cxt->GetPthreadPool();

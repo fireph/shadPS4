@@ -14,6 +14,10 @@ void SymbolsResolver::AddSymbol(const SymbolResolver& s, u64 virtual_addr) {
     m_symbols.emplace_back(GenerateName(s), s.nidName, virtual_addr);
 }
 
+void SymbolsResolver::Clear() {
+    m_symbols.clear();
+}
+
 std::string SymbolsResolver::GenerateName(const SymbolResolver& s) {
     return fmt::format("{}#{}#{}#{}#{}#{}#{}", s.name, s.library, s.library_version, s.module,
                        s.module_version_major, s.module_version_minor, SymbolTypeToS(s.type));
